@@ -1,6 +1,6 @@
 #!/bin/sh
 
-user=$(ls /home)
+user=ctf
 
 if [ "$DASFLAG" ]; then
     INSERT_FLAG="$DASFLAG"
