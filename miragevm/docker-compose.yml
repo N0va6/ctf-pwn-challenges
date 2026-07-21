@@ -1,0 +1,8 @@
+services:
+  miragevm:
+    image: ghcr.nju.edu.cn/n0va6/pwn-miragevm:latest
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./flag:/flag:ro
+    restart: unless-stopped

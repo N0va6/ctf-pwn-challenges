@@ -25,6 +25,8 @@ jobs:
             image: pwn-shellcode
           - context: likelibc
             image: pwn-likelibc
+          - context: miragevm
+            image: pwn-miragevm
 
     steps:
       - name: Checkout
