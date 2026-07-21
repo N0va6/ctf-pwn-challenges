@@ -4,15 +4,7 @@ LABEL Author="N0va6" Challenge="miragevm"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i "s/http:\/\/archive.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g" /etc/apt/sources.list; \
-        sed -i "s/http:\/\/security.ubuntu.com/http:\/\/mirrors.tuna.tsinghua.edu.cn/g" /etc/apt/sources.list; \
-    fi && \
-    if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then \
-        sed -i "s#http://archive.ubuntu.com/ubuntu/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#g" /etc/apt/sources.list.d/ubuntu.sources; \
-        sed -i "s#http://security.ubuntu.com/ubuntu/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#g" /etc/apt/sources.list.d/ubuntu.sources; \
-    fi && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends xinetd ca-certificates coreutils bash && \
     rm -rf /var/lib/apt/lists/*
 
@@ -20,8 +12,14 @@ RUN useradd -m ctf
 
 WORKDIR /home/ctf
 
-RUN cp -R /lib* /home/ctf && \
-    cp -R /usr/lib* /home/ctf
+RUN mkdir -p /home/ctf/lib /home/ctf/lib64 /home/ctf/usr/lib /home/ctf/bin && \
+    cp -aL /lib/x86_64-linux-gnu /home/ctf/lib/ && \
+    cp -aL /usr/lib/x86_64-linux-gnu /home/ctf/usr/lib/ && \
+    cp -aL /lib64/ld-linux-x86-64.so.2 /home/ctf/lib64/ && \
+    cp -aL /bin/sh /home/ctf/bin/sh && \
+    cp -aL /bin/ls /home/ctf/bin/ls && \
+    cp -aL /bin/cat /home/ctf/bin/cat && \
+    cp -aL /usr/bin/timeout /home/ctf/bin/timeout
 
 RUN mkdir /home/ctf/dev && \
     mknod /home/ctf/dev/null c 1 3 && \
@@ -29,12 +27,6 @@ RUN mkdir /home/ctf/dev && \
     mknod /home/ctf/dev/random c 1 8 && \
     mknod /home/ctf/dev/urandom c 1 9 && \
     chmod 666 /home/ctf/dev/*
-
-RUN mkdir /home/ctf/bin && \
-    cp /bin/sh /home/ctf/bin && \
-    cp /bin/ls /home/ctf/bin && \
-    cp /bin/cat /home/ctf/bin && \
-    cp /usr/bin/timeout /home/ctf/bin || true
 
 COPY ./config/ctf.xinetd /etc/xinetd.d/ctf
 COPY ./service/docker-entrypoint.sh /
