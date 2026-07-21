@@ -38,5 +38,7 @@ jobs:
           tags: |
             ghcr.io/n0va6/pwn-miragevm:latest
             ghcr.io/n0va6/pwn-miragevm:sha-${{ github.sha }}
-          provenance: false
+          # Keep the provenance attestation: Buildx then publishes an OCI image
+          # index, matching the format that ghcr.nju.edu.cn serves correctly.
+          provenance: mode=min
           sbom: false
