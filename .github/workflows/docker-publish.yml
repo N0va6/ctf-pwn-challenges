@@ -32,6 +32,11 @@ jobs:
           context: ./miragevm
           file: ./miragevm/Dockerfile
           push: true
-          tags: ghcr.io/n0va6/pwn-miragevm:latest
+          # The domestic ghcr.nju.edu.cn proxy correctly resolves OCI image
+          # indexes with an explicit platform, as used by the other challenges.
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/n0va6/pwn-miragevm:latest
+            ghcr.io/n0va6/pwn-miragevm:sha-${{ github.sha }}
           provenance: false
           sbom: false
