@@ -8,7 +8,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends xinetd ca-certificates bash && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m ctf
+RUN groupadd --gid 1001 ctf && \
+    useradd --uid 1001 --gid 1001 --create-home ctf
 
 WORKDIR /home/ctf
 
@@ -39,6 +40,9 @@ RUN chown -R root:ctf /home/ctf && \
     touch /home/ctf/flag && \
     chmod 744 /home/ctf/flag && \
     chmod 711 /home/ctf/attachment
+
+# Fail the image build if the exact non-root chroot execution path is invalid.
+RUN /usr/sbin/chroot --userspec=1001:1001 /home/ctf /bin/sh -c 'test -x /attachment'
 
 EXPOSE 9999
 
