@@ -1,59 +1,37 @@
-name: Build and Push PWN images to GHCR
+name: Publish MirageVM image
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
+    paths:
+      - "miragevm/**"
+      - ".github/workflows/docker-publish.yml"
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  build-and-push:
+  publish-miragevm:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - context: fmt
-            image: pwn-fmt
-          - context: shellcode
-            image: pwn-shellcode
-          - context: likelibc
-            image: pwn-likelibc
-          - context: miragevm
-            image: pwn-miragevm
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/n0va6/${{ matrix.image }}
-          tags:
-            - type=raw,value=latest
-            - type=sha
-
-      - name: Build and push
+      - name: Build and push MirageVM
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.context }}
+          context: ./miragevm
+          file: ./miragevm/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/n0va6/pwn-miragevm:latest
           provenance: false
           sbom: false
