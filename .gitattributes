@@ -1,0 +1,2 @@
+miragevm/service/docker-entrypoint.sh text eol=lf
+miragevm/config/ctf.xinetd text eol=lf

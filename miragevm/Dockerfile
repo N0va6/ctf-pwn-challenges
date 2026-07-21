@@ -5,7 +5,7 @@ LABEL Author="N0va6" Challenge="miragevm"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends xinetd ca-certificates coreutils bash && \
+    apt-get install -y --no-install-recommends xinetd ca-certificates bash && \
     rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m ctf
@@ -18,8 +18,7 @@ RUN mkdir -p /home/ctf/lib /home/ctf/lib64 /home/ctf/usr/lib /home/ctf/bin && \
     cp -aL /lib64/ld-linux-x86-64.so.2 /home/ctf/lib64/ && \
     cp -aL /bin/sh /home/ctf/bin/sh && \
     cp -aL /bin/ls /home/ctf/bin/ls && \
-    cp -aL /bin/cat /home/ctf/bin/cat && \
-    cp -aL /usr/bin/timeout /home/ctf/bin/timeout
+    cp -aL /bin/cat /home/ctf/bin/cat
 
 RUN mkdir /home/ctf/dev && \
     mknod /home/ctf/dev/null c 1 3 && \
