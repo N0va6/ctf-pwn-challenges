@@ -3,6 +3,6 @@ services:
     image: ghcr.nju.edu.cn/n0va6/pwn-miragevm:latest
     ports:
       - "9999:9999"
-    volumes:
-      - ./flag:/flag:ro
+    environment:
+      - FLAG=flag{test_flag}
     restart: unless-stopped

@@ -3,14 +3,13 @@
 Remote:
 
 ```bash
-nc <host> <port>
+nc HOST PORT
 ```
 
-Deploy with the GHCR mirror:
+Image:
 
 ```bash
-docker pull ghcr.nju.edu.cn/n0va6/pwn-miragevm:latest
-docker compose up -d
+ghcr.nju.edu.cn/n0va6/pwn-miragevm:latest
 ```
 
-Put the real flag in `./flag` before deployment.
+For platform deployment, set the environment variable `FLAG` or `GZCTF_FLAG` to the real flag.
