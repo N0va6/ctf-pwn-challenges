@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "c20bef33603eee7a985be42060c483bfe224a9cd7159d01541da37bf42c4e7d8  twin4-beacon-v4-keylin-linux-amd64.docker-load.tar" | sha256sum -c -
+          echo "1563531206110ee2c2175f466eb4603af97674908a1875983bdb369664506e0c  twin4-beacon-v4-keylin-linux-amd64.docker-load.tar" | sha256sum -c -
 
       - name: Import prepared Docker image
         shell: bash
@@ -81,8 +81,10 @@ jobs:
           set -euo pipefail
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           image="ghcr.io/${owner}/pwn-twin4"
+          docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-beacon-2"
           docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-beacon-1"
           docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-keylin"
+          docker push "${image}:v4-beacon-2"
           docker push "${image}:v4-beacon-1"
           docker push "${image}:v4-keylin"
-          echo "Published ${image}:v4-beacon-1" >> "$GITHUB_STEP_SUMMARY"
+          echo "Published ${image}:v4-beacon-2" >> "$GITHUB_STEP_SUMMARY"
