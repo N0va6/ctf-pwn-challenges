@@ -1,4 +1,4 @@
-name: Publish existing TWIN V4 image to GHCR
+name: Publish TWIN V4 GUID-flag image to GHCR
 
 on:
   workflow_dispatch:
@@ -24,20 +24,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "1563531206110ee2c2175f466eb4603af97674908a1875983bdb369664506e0c  twin4-beacon-v4-keylin-linux-amd64.docker-load.tar" | sha256sum -c -
+          echo "0085cd572262945b7e2d3aa43774d91052d83ad01ac5ee8a2011341f9147ee84  twin4-beacon-v4-keylin-linux-amd64.docker-load.tar" | sha256sum -c -
 
       - name: Import prepared Docker image
         shell: bash
         run: |
           set -euo pipefail
           docker load -i twin4-beacon-v4-keylin-linux-amd64.docker-load.tar
-          docker image inspect iscc2026/twin4-beacon:v4-keylin --format '{{.Os}}/{{.Architecture}} {{.Config.User}} {{json .Config.Entrypoint}}'
-          test "$(docker image inspect iscc2026/twin4-beacon:v4-keylin --format '{{.Os}}/{{.Architecture}}')" = "linux/amd64"
+          docker image inspect iscc2026/twin4-beacon:v4-beacon-3 --format '{{.Os}}/{{.Architecture}} {{.Config.User}} {{json .Config.Entrypoint}}'
+          test "$(docker image inspect iscc2026/twin4-beacon:v4-beacon-3 --format '{{.Os}}/{{.Architecture}}')" = "linux/amd64"
 
       - name: Verify start and TCP greeting using disposable flag
         shell: bash
         env:
-          TEST_FLAG: 'ISCC{00000000000000000000000000}'
+          TEST_FLAG: 'ISCC{00000000-0000-4000-8000-000000000000}'
         run: |
           set -euo pipefail
           docker run -d --name twin4-ci \
@@ -45,7 +45,7 @@ jobs:
             --read-only --cap-drop ALL --security-opt no-new-privileges \
             --memory 256m --cpus 1 \
             -e GZCTF_FLAG="$TEST_FLAG" \
-            iscc2026/twin4-beacon:v4-keylin
+            iscc2026/twin4-beacon:v4-beacon-3
           trap 'docker logs twin4-ci || true; docker rm -f twin4-ci >/dev/null 2>&1 || true' EXIT
           python3 - <<'PYCODE'
           import socket, time
@@ -75,16 +75,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish original image, without rebuilding
+      - name: Publish GUID-compatible image
         shell: bash
         run: |
           set -euo pipefail
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           image="ghcr.io/${owner}/pwn-twin4"
-          docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-beacon-2"
-          docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-beacon-1"
-          docker tag iscc2026/twin4-beacon:v4-keylin "${image}:v4-keylin"
-          docker push "${image}:v4-beacon-2"
-          docker push "${image}:v4-beacon-1"
-          docker push "${image}:v4-keylin"
-          echo "Published ${image}:v4-beacon-2" >> "$GITHUB_STEP_SUMMARY"
+          docker tag iscc2026/twin4-beacon:v4-beacon-3 "${image}:v4-beacon-3"
+          docker push "${image}:v4-beacon-3"
+          echo "Published ${image}:v4-beacon-3" >> "$GITHUB_STEP_SUMMARY"
